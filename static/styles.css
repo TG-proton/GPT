@@ -1,0 +1,70 @@
+/* styles.css */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+}
+
+input[type="text"], select, input[type="file"], button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+/* Anpassa för mindre skärmar */
+@media (max-width: 600px) {
+    form {
+        padding: 15px;
+    }
+
+    input[type="text"], select, input[type="file"], button {
+        padding: 12px;
+        font-size: 16px;
+    }
+}
+
+/* Länkstil */
+.footer-link {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.footer-link a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.footer-link a:hover {
+    text-decoration: underline;
+}
+
+.button-loading {
+    background-color: red; /* Ändra bakgrundsfärg till röd */
+    color: white; /* Ändra textfärg till vit för bättre kontrast */
+    cursor: not-allowed; /* Ändra muspekaren för att visa att knappen inte är aktiv */
+}

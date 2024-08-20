@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lager</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <style>
+        #loadingIndicator {
+            display: none; /* Döljer indikatorn som standard */
+            color: green; /* Färg på indikatorn */
+            font-weight: bold; /* Fet stil för indikatorn */
+            margin-left: 10px; /* Lägger till lite avstånd till vänster */
+        }
+        #progressBar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        #progress {
+            height: 20px;
+            width: 0;
+            background-color: green;
+            border-radius: 5px;
+        }
+        #progressText {
+            margin-top: 5px; /* Lägger till lite avstånd ovanför texten */
+        }
+    </style>
+</head>
+<body>
+    <form id="uploadForm" action="/upload" method="post" enctype="multipart/form-data" onsubmit="showLoadingIndicator()">
+        <input type="text" name="description" placeholder="Beskrivning" required>
+
+        <select id="type" name="type" required>
+            <option value="" disabled selected>Välj typ</option>
+            {% for type in types %}
+                <option value="{{ type }}">{{ type }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customType" placeholder="Ange ny typ" style="display:none;">
+
+        <select id="location" name="location">
+            <option value="" disabled selected>Välj lokal</option>
+            {% for location in locations %}
+                <option value="{{ location }}">{{ location }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customLocation" placeholder="Ange ny lokal" style="display:none;">
+
+        <select id="shelf" name="shelf">
+            <option value="" disabled selected>Välj hyllgrupp</option>
+            {% for shelf in shelves %}
+                <option value="{{ shelf }}">{{ shelf }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customShelf" placeholder="Ange ny hyllgrupp" style="display:none;">
+
+        <select id="shelfRow" name="shelfRow">
+            <option value="" disabled selected>Välj hyllrad</option>
+            {% for shelf_row in shelf_rows %}
+                <option value="{{ shelf_row }}">{{ shelf_row }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customShelfRow" placeholder="Ange ny hyllrad" style="display:none;">
+
+        <select id="shelfPosition" name="shelfPosition">
+            <option value="" disabled selected>Välj hyllplan</option>
+            {% for shelf_position in shelf_positions %}
+                <option value="{{ shelf_position }}">{{ shelf_position }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customShelfPosition" placeholder="Ange ny hyllplan" style="display:none;">
+
+        <select id="hyllplats" name="hyllplats">
+            <option value="" disabled selected>Välj hyllplats</option>
+            {% for hyll in hyllplats %}
+                <option value="{{ hyll }}">{{ hyll }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customHyllplats" placeholder="Ange ny hyllplats" style="display:none;">
+
+        <select id="pall" name="pall">
+            <option value="" disabled selected>Välj pall</option>
+            {% for pall in palls %}
+                <option value="{{ pall }}">{{ pall }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customPall" placeholder="Ange ny pall" style="display:none;">
+
+        <input type="file" name="file" accept="image/*" capture="camera" required>
+        <button type="submit">Skicka</button>
+        <span id="loadingIndicator">Filuppladdning pågår...</span> <!-- Indikator för uppladdning -->
+
+        <div id="progressBar">
+            <div id="progress"></div>
+        </div>
+        <div id="progressText">0 kB / 0 kB</div> <!-- Text för att visa uppladdningsstatus -->
+    </form>
+
+    <form action="{{ url_for('search') }}" method="get">
+        <input type="text" name="search" placeholder="Sök efter artikel" required>
+        <button type="submit">Sök</button>
+    </form>
+
+    <div class="footer-link">
+        <a href="{{ url_for('list_articles') }}">Artikellista</a>
+    </div>
+
+    <script>
+        function handleCustomOption(e) {
+            const value = e.target.value;
+            const customField = document.querySelector(`input[name="custom${e.target.id.charAt(0).toUpperCase() + e.target.id.slice(1)}"]`);
+            if (value === 'custom') {
+                customField.style.display = 'block';
+            } else {
+                customField.style.display = 'none';
+            }
+        }
+
+        document.querySelectorAll('select').forEach(select => {
+            select.addEventListener('change', handleCustomOption);
+        });
+
+        function showLoadingIndicator() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.style.display = 'inline'; // Visa indikatorn
+        }
+
+        function handleSubmit(event) {
+            event.preventDefault(); // Förhindra standardformulärinlämning
+            const formData = new FormData(document.getElementById('uploadForm'));
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            loadingIndicator.style.display = 'inline'; // Visa indikatorn
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/upload', true);
+
+            // Uppdatera progressbar
+            xhr.upload.addEventListener('progress', function(event) {
+                if (event.lengthComputable) {
+                    const percentComplete = (event.loaded / event.total) * 100;
+                    const progress = document.getElementById('progress');
+                    progress.style.width = percentComplete + '%';
+
+                    // Uppdatera texten för att visa hur mycket som har laddats upp
+                    const progressText = document.getElementById('progressText');
+                    progressText.innerText = `${Math.round(event.loaded / 1024)} kB / ${Math.round(event.total / 1024)} kB`;
+                }
+            }, false);
+
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    alert("Fil uppladdad framgångsrikt!"); // Bekräftelsemeddelande
+                } else {
+                    alert("Fel vid uppladdning, försök igen."); // Felmeddelande
+                }
+                loadingIndicator.style.display = 'none'; // Dölj indikatorn
+                document.getElementById('progress').style.width = '0%'; // Återställ progressbar
+                document.getElementById('progressText').innerText = '0 kB / 0 kB'; // Återställ text
+            };
+
+            xhr.send(formData);
+        }
+
+        // Hantera formulärinlämning
+        document.getElementById('uploadForm').addEventListener('submit', handleSubmit);
+    </script>
+</body>
+</html>

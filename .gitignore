@@ -1,0 +1,10 @@
+# Ignorera virtualenv-mappen
+venv/
+
+# Ignorera mappen med uppladdade bilder
+uploads/
+_egna/
+
+# Ignorera andra känsliga filer eller mappar om nödvändigt
+config.py
+*.log

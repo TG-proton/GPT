@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Redigera Artikel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function handleCustomOption(e) {
+            const value = e.target.value;
+            const customField = document.querySelector(`input[name="custom${e.target.name.charAt(0).toUpperCase() + e.target.name.slice(1)}"]`);
+            if (value === 'custom') {
+                customField.style.display = 'block';
+            } else {
+                customField.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', handleCustomOption);
+                handleCustomOption({ target: select }); // Initial check for existing selections
+            });
+        });
+    </script>
+</head>
+<body>
+    <h1>Redigera Artikel</h1>
+    <form action="{{ url_for('edit_article', timestamp=article.timestamp) }}" method="post">
+        <input type="text" name="description" value="{{ article.description }}" required>
+
+        <select name="type" required>
+            <option value="" disabled {% if not article.type %}selected{% endif %}>Välj typ</option>
+            {% for type in types %}
+                <option value="{{ type }}" {% if type == article.type %}selected{% endif %}>{{ type }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customType" placeholder="Ange ny typ" style="display:none;">
+
+        <select name="location">
+            <option value="" disabled {% if not article.location %}selected{% endif %}>Välj lokal</option>
+            {% for location in locations %}
+                <option value="{{ location }}" {% if location == article.location %}selected{% endif %}>{{ location }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customLocation" placeholder="Ange ny lokal" style="display:none;">
+
+        <select name="shelf">
+            <option value="" disabled {% if not article.shelf %}selected{% endif %}>Välj hyllgrupp</option>
+            {% for shelf in shelves %}
+                <option value="{{ shelf }}" {% if shelf == article.shelf %}selected{% endif %}>{{ shelf }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customShelf" placeholder="Ange ny hyllgrupp" style="display:none;">
+
+        <select name="shelfRow">
+            <option value="" disabled {% if not article.shelf_row %}selected{% endif %}>Välj hyllrad</option>
+            {% for shelf_row in shelf_rows %}
+                <option value="{{ shelf_row }}" {% if shelf_row == article.shelf_row %}selected{% endif %}>{{ shelf_row }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customShelfRow" placeholder="Ange ny hyllrad" style="display:none;">
+
+        <select name="shelfPosition">
+            <option value="" disabled {% if not article.shelf_position %}selected{% endif %}>Välj hyllplan</option>
+            {% for shelf_position in shelf_positions %}
+                <option value="{{ shelf_position }}" {% if shelf_position == article.shelf_position %}selected{% endif %}>{{ shelf_position }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customShelfPosition" placeholder="Ange ny hyllplan" style="display:none;">
+
+        <select name="hyllplats">
+            <option value="" disabled {% if not article.hyllplats %}selected{% endif %}>Välj hyllplats</option>
+            {% for hyll in hyllplats %}
+                <option value="{{ hyll }}" {% if hyll == article.hyllplats %}selected{% endif %}>{{ hyll }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customHyllplats" placeholder="Ange ny hyllplats" style="display:none;">
+
+        <select name="pall">
+            <option value="" disabled {% if not article.pall %}selected{% endif %}>Välj pall</option>
+            {% for pall in palls %}
+                <option value="{{ pall }}" {% if pall == article.pall %}selected{% endif %}>{{ pall }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="customPall" placeholder="Ange ny pall" style="display:none;">
+
+        <button type="submit">Spara</button>
+    </form>
+
+    <div class="footer-link">
+        <a href="{{ url_for('index') }}" style="float: right; margin-right: 10px;">Ny artikel</a>
+        <a href="{{ url_for('list_articles') }}">Artikellista</a>
+    </div>
+</body>
+</html>

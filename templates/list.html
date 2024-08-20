@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artikel Lista</title>
+    <style>
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .header-links {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Artiklar</h1>
+    <div class="header-links">
+        <a href="{{ url_for('export_csv') }}" style="float: right;">Exportera till CSV</a>
+        <a href="{{ url_for('index') }}" style="float: right; margin-right: 10px;">Tillbaka till Uppladdning</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Tid</th>
+                <th>Beskrivning</th>
+                <th>Typ</th>
+                <th>Lokal</th>
+                <th>Grupp</th>
+                <th>Hyllrad</th>
+                <th>Hyllplan</th>
+                <th>Hyllplats</th>
+                <th>Pall</th>
+                <th>Link</th>
+                <th>Redigera</th>
+                <th>Radera</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in articles %}
+            <tr>
+                <td>{{ article.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ article.description }}</td>
+                <td>{{ article.type }}</td>
+                <td>{{ article.location }}</td>
+                <td>{{ article.shelf }}</td>
+                <td>{{ article.shelf_row }}</td>
+                <td>{{ article.shelf_position }}</td>
+                <td>{{ article.hyllplats }}</td>
+                <td>{{ article.pall }}</td>
+                <td><a href="http://lager1/{{ article.file_path }}" target="_blank">http://lager1/{{ article.file_path }}</a></td>
+                <td><a href="{{ url_for('edit_article', timestamp=article.timestamp) }}">Redigera</a></td>
+                <td><a href="{{ url_for('delete_article', timestamp=article.timestamp) }}">Radera</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
